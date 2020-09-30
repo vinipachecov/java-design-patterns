@@ -1,4 +1,4 @@
-package Solid;
+package Solid.SingleResponsibility;
 
 //A separate class for handling persistence 
 public class UserPersistenceService {

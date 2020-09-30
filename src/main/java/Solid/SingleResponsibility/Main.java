@@ -1,4 +1,4 @@
-package Solid;
+package Solid.SingleResponsibility;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package Solid;
+package Solid.SingleResponsibility;
 
 //User
 public class User {

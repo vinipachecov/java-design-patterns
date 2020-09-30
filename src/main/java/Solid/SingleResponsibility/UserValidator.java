@@ -1,4 +1,4 @@
-package Solid;
+package Solid.SingleResponsibility;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
