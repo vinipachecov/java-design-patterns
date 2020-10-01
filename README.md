@@ -9,6 +9,7 @@ Summary:
 - [SOLID](#SOLID)
     - [Single Responsibility Principle](#SINGLE-RESPONSIBILITY-PRINCIPLE)
     - [Open-Closed Principle](#open-closed-principle)
+    - [Liskov Substitution Principle](#liskov-substitution-principle)
 
 ## SOLID
 
@@ -35,7 +36,7 @@ Code
 ```java
 public class UserController {
     public String createUser(String userJson) throws IOException {
-            /* Parsing Logic */`
+            /* Parsing Logic */
             ObjectMapper mapper = new ObjectMapper();
             User user = mapper.readValue(userJson, User.class);
     
@@ -377,3 +378,150 @@ public class PhoneSubscriber extends Subscriber{
 
 }
 ```
+
+### Liskov Substitution Principle
+
+_We should be to substitute base class objects with child class objects 
+and this should not alter behavior/characteristics of program_
+
+
+If the base class specifies a behavior A and if that class is substituted by
+a child class, that behavior should not alter.
+
+For example:
+
+````java
+package Solid.LiskovSubstitution;
+
+public class Square extends Rectangle {
+	
+	public Square(int side) {
+		super(side, side);
+	}
+	
+	@Override
+	public void setWidth(int width) {
+		setSide(width);
+	}
+
+	@Override
+	public void setHeight(int height) {
+		setSide(height);
+	}
+
+	public void setSide(int side) {
+		super.setWidth(side);
+		super.setHeight(side);
+	}
+
+}
+````
+
+````java
+package Solid.LiskovSubstitution;
+
+public class Rectangle {
+
+	private int width;
+	
+	private int height;
+
+	public Rectangle(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+	
+	public int computeArea() {
+		return width * height;
+	}
+}
+````
+
+In our main class, our tests will fail in the square use case.
+It happens because the Square class, as shown before, overrides the setHeight
+and setWidth method which in the end modifies the original behavior of the class.
+
+````java
+package Solid.LiskovSubstitution;
+
+public class Main {
+
+	public static void main(String[] args) {
+		
+		Rectangle rectangle = new Rectangle(10, 20);
+		System.out.println(rectangle.computeArea());
+		
+		Square square = new Square(10);
+		System.out.println(square.computeArea());
+		
+		useRectangle(rectangle);
+		
+		useRectangle(square);
+
+	}
+
+	private static void useRectangle(Rectangle rectangle) {
+		/* Square class will fail:
+		* - even a valid square class will in the end fail this tests
+		* - modified the behavior of the base class
+		* */
+		rectangle.setHeight(20);
+		rectangle.setWidth(30);
+		assert rectangle.getHeight() == 20 : "Height Not equal to 20";
+		assert rectangle.getWidth() == 30 : "Width Not equal to 30";
+	}
+}
+````
+
+This problem can be solved by creating a contract which our classes will implement:
+
+````java
+package Solid.LiskovSubstitution;
+
+public interface Shape {
+    public int computeArea();
+}
+````
+
+By replacing the Rectangle extension from the Square class, and implementing
+the Shape class we will ensure the Liskov Principle doesn't get broken as it was before.
+Now a derived class is not changing the behavior of the parent class anymore and a new 
+test case for Square shall be written:
+
+````java
+package Solid.LiskovSubstitution;
+
+public class Square implements Shape {
+
+	public int side;
+	
+	public Square(int side) {
+		this.side = side;
+	}
+
+	public void setSide(int side) {
+		this.side = side;
+	}
+
+	@Override
+	public int computeArea() {
+		return this.side * this.side;
+	}
+}
+````
