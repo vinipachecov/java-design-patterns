@@ -10,6 +10,7 @@ Summary:
     - [Single Responsibility Principle](#SINGLE-RESPONSIBILITY-PRINCIPLE)
     - [Open-Closed Principle](#open-closed-principle)
     - [Liskov Substitution Principle](#liskov-substitution-principle)
+    - [Interface Segregation Principle](#interface-segregation-principle)
 
 ## SOLID
 
@@ -525,3 +526,155 @@ public class Square implements Shape {
 	}
 }
 ````
+
+### Interface Segregation Principle
+
+_Clients should not be forced to depend upon interfaces that they do not use_
+
+In other words, clients should not depend on methods that they don't use..
+
+**Interface Polution**
+
+The practice to gather unrelated methods into a single interface, 
+making it larger and obscure.
+
+Signs of Interface Polution:
+- Classes have empty method implementations
+- Method implementations throw UnsupportedOperationException or similar exception
+- Method implementations return null or default/dummy values
+
+Interface Segregation makes sure our interfaces/contracts are clean and only have methods related to each other.
+
+Example:
+
+Let's say we have 3 Service implementations and only a single
+interface to declare the methods they should implement.
+
+````java
+package Solid.InterfaceSegregation.service;
+
+import Solid.InterfaceSegregation.entity.Entity;
+
+import java.util.List;
+
+//common interface to be implemented by all persistence services.
+public interface PersistenceService<T extends Entity> {
+
+	public void save(T entity);
+	
+	public void delete(T entity);
+	
+	public T findById(Long id);
+
+	public List<T> findByName(String name);
+	
+}
+````
+
+And our two service classes implementing this PersistenceService
+
+````java
+package Solid.InterfaceSegregation.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import Solid.InterfaceSegregation.entity.User;
+
+//Stores User entities
+public class UserPersistenceService implements PersistenceService<User>{
+	
+	private static final Map<Long, User> USERS = new HashMap<>();
+	
+	@Override
+	public void save(User entity) {
+		synchronized (USERS) {
+			USERS.put(entity.getId(), entity);
+		}
+	}
+
+	@Override
+	public void delete(User entity) {
+		synchronized (USERS) {
+			USERS.remove(entity.getId());
+		}
+	}
+
+	@Override
+	public User findById(Long id) {
+		synchronized (USERS) {
+			return USERS.get(id);
+		}
+	}
+
+	@Override
+	public List<User> findByName(String name) {
+		synchronized (USERS) {
+			return USERS.values().stream().filter(u->u.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
+		}
+	}
+
+}
+````
+
+And now our OrderService implementation 
+
+````java
+package Solid.InterfaceSegregation.service;
+
+import Solid.InterfaceSegregation.entity.Order;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class OrderPersistenceService implements PersistenceService<Order>{
+	
+	private static final Map<Long, Order> ORDERS = new HashMap<>();
+	
+	@Override
+	public void save(Order entity) {
+		synchronized (ORDERS) {
+			ORDERS.put(entity.getId(), entity);
+		}
+	}
+
+	@Override
+	public void delete(Order entity) {
+		synchronized (ORDERS) {
+			ORDERS.remove(entity.getId());
+		}
+	}
+
+	@Override
+	public Order findById(Long id) {
+		synchronized (ORDERS) {
+			return ORDERS.get(id);
+		}
+	}
+
+    @Override
+	public List<Order> findByName(String name) {
+		throw new UnsupportedOperationException("Find by name is not supported");
+	}
+}
+````
+
+**Problem**
+
+- Unrelated methods in a common Interface
+- Returning exceptions that show class do not support it 
+
+What happens here is that if the Order Entity doesn't have a name property, the method findByName
+will be useless. This method is also returning an unsupported operation exception, which is just one
+of signs that it is breaking the interface segregation as well.
+
+**Solution**
+
+- A common way to solve it would be to remove the findByName method from PersistenceService interface in addition
+to removing the override from the UserPersistence class.
+
+- A more interesting way to solve this problem would be to break the PersistenceService into separate interfaces for each Service. This approach
+will create more methods, but folder and file structure will be clearer to developers in general.
