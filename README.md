@@ -678,3 +678,33 @@ to removing the override from the UserPersistence class.
 
 - A more interesting way to solve this problem would be to break the PersistenceService into separate interfaces for each Service. This approach
 will create more methods, but folder and file structure will be clearer to developers in general.
+
+### Dependency Inversion Principle
+
+_
+A - High level modules should not depend upon low level modules. Both
+should depend upon abstractions.
+
+B - Abstractions should not depend upon details. Details should depend upon abstractions._
+
+** What is a dependency **:
+Every part of our code that tightly couple the implementation of a solution.
+
+- A new instance of an object inside a method is a dependency
+- third-party packages or classes used in the concrete implementation of a solution are dependencies
+
+````java
+public class Report{
+    public void write(Formatter formatter, Writer writer) {
+        Report report = new Report();
+        // build the report
+        String stringReport = formatter.format(report);
+        // write out the report
+        writer.write("myreport");            
+    }
+}
+````
+
+Instead of creating an instance of a formatter and an instance of a writer for a given
+functionality, the class report receives them instanciated so the method write in the Report
+class can provide a wider range of functionalities beyond a single use case like formatting jSON and writing in a file locally.
