@@ -11,7 +11,10 @@ Summary:
     - [Open-Closed Principle](#open-closed-principle)
     - [Liskov Substitution Principle](#liskov-substitution-principle)
     - [Interface Segregation Principle](#interface-segregation-principle)
-
+    - [Dependency Inversion Principle](#dependency-inversion-principle)
+- [Design Patterns](#design-patterns)
+    - [Creational Patterns](#creational-patterns)    
+     
 ## SOLID
 
 SOLID is an acronym for the following principles:
@@ -708,3 +711,38 @@ public class Report{
 Instead of creating an instance of a formatter and an instance of a writer for a given
 functionality, the class report receives them instanciated so the method write in the Report
 class can provide a wider range of functionalities beyond a single use case like formatting jSON and writing in a file locally.
+
+## Design Patterns
+
+There are many design patterns, and to memorize them all can be hard. To help remembering them we can
+split them into 3 categories: _Creational, Structural and Behavioral_.
+
+**Creational** 
+
+All design patterns that belong to this group deal with the process of creation of objects of classes, in other words,
+instantiation process. They will give you solutions to common problems you face when you are thinking on creating objects.
+
+**Structural**
+
+This category deal with how classes and objects are arranged or composed.
+
+**Behavioral**
+
+Behavioral patterns describe how classes and objects interact and communicate with each other.
+
+### Creational Patterns
+
+Initially to use patterns to create new objects can sound counter-intuitive. One might say that
+we already have the **new** keyboard to instantiate objects but as our projects
+become for and more complex we end up having objects depending on other objects, which requires
+a more intelligent approach.
+
+The list covered here are:
+- Builder
+- Simple Factory
+- Factory Method
+- Prototype
+- Singleton
+- Abstract Factory
+- Object Pool
+
