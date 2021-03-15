@@ -13,7 +13,8 @@ Summary:
     - [Interface Segregation Principle](#interface-segregation-principle)
     - [Dependency Inversion Principle](#dependency-inversion-principle)
 - [Design Patterns](#design-patterns)
-    - [Creational Patterns](#creational-patterns)    
+    - [Creational Patterns](#creational-patterns)
+        - [Builder](#builder-pattern)      
      
 ## SOLID
 
@@ -746,3 +747,214 @@ The list covered here are:
 - Abstract Factory
 - Object Pool
 
+#### Builder Pattern
+
+What is a builder pattern?
+In a builder, logic related to object construction is removed from "client" code
+and abstract it in separate class.
+
+What problem does the builder pattern solves?
+
+* Class constructor with many parameters
+* Class constructors that require other objects are parts to build them
+
+**When to use it?**
+* Complex processs to create an instance
+
+ Implementations
+ 
+ In java it can be done through a separate class or through an inner class
+ that implements a Builder interface.
+ 
+ Builder interface 
+ ````java
+public interface UserDTOBuilder {
+	//methods to build "parts" of product at a time
+	UserDTOBuilder withFirstName(String fname) ;
+
+	UserDTOBuilder withLastName(String lname);
+
+	UserDTOBuilder withBirthday(LocalDate date);
+
+	UserDTOBuilder withAddress(Address address);
+	//method to "assemble" final product
+	UserDTO build();
+	//(optional) method to fetch already built object
+	UserDTO getUserDTO();
+}
+ ````
+
+Concrete Implementation in a separate Module
+````java
+//The concrete builder for UserWebDTO
+public class UserWebDTOBuilder implements UserDTOBuilder {
+
+	private String firstName;
+	private String lastName;
+	private String age;
+	private String address;
+	private UserWebDTO dto;
+	
+	@Override
+	public UserDTOBuilder withFirstName(String fname) {
+		firstName = fname;
+		return this;
+	}
+
+	@Override
+	public UserDTOBuilder withLastName(String lname) {
+		lastName = lname;
+		return this;
+	}
+
+	@Override
+	public UserDTOBuilder withBirthday(LocalDate date) {
+		Period ageInYears = Period.between(date, LocalDate.now());
+		age = Integer.toString(ageInYears.getYears());
+		return this;
+	}
+
+	@Override
+	public UserDTOBuilder withAddress(Address address) {
+		this.address = address.getHouseNumber() +", " + address.getStreet()
+					   +"\n" + address.getCity() +"\n"+address.getState()+" "+address.getZipcode();
+		return this;
+	}
+
+	@Override
+	public UserDTO build() {
+		dto = new UserWebDTO(firstName+ " "+lastName, address, age);
+		return dto;
+	}
+
+	@Override
+	public UserDTO getUserDTO() {
+		return dto;
+	}
+}
+````
+
+
+Concrete implementation with inner static class:
+`````java
+package Patterns.Builder.Impl2;
+
+import java.time.LocalDate;
+import java.time.Period;
+
+//Product class
+public class UserDTO {
+
+	private String name;
+	
+	private String address;
+	
+	private String age;
+
+	public String getName() {
+		return name;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public String getAge() {
+		return age;
+	}
+	
+	private void setName(String name) {
+		this.name = name;
+	}
+
+	private void setAddress(String address) {
+		this.address = address;
+	}
+
+	private void setAge(String age) {
+		this.age = age;
+	}
+
+	@Override
+	public String toString() {
+		return "name=" + name + "\nage=" + age + "\naddress=" + address ;
+	}
+	//Get builder instance
+	public static UserDTOBuilder getBuilder() {
+		return new UserDTOBuilder();
+	}
+	//Builder
+	public static class UserDTOBuilder {
+		
+		private String firstName;
+		
+		private String lastName;
+		
+		private String age;
+		
+		private String address;
+		
+		private UserDTO userDTO;
+		
+		public UserDTOBuilder withFirstName(String fname) {
+			this.firstName = fname;
+			return this;
+		}
+		
+		public UserDTOBuilder withLastName(String lname) {
+			this.lastName = lname;
+			return this;
+		}
+		
+		public UserDTOBuilder withBirthday(LocalDate date) {
+			age = Integer.toString(Period.between(date, LocalDate.now()).getYears());
+			return this;
+		}
+		
+		public UserDTOBuilder withAddress(Address address) {
+			this.address = address.getHouseNumber() + " " +address.getStreet()
+						+ "\n"+address.getCity()+", "+address.getState()+" "+address.getZipcode(); 
+
+			return this;
+		}
+		
+		public UserDTO build() {
+			this.userDTO = new UserDTO();
+			userDTO.setName(firstName+" " + lastName);
+			userDTO.setAddress(address);
+			userDTO.setAge(age);
+			return this.userDTO;
+		}
+		
+		public UserDTO getUserDTO() {
+			return this.userDTO;
+		}
+	}
+}
+
+`````
+
+Now it can be instantiated in the client code
+using method chaining:
+
+Client
+````java
+
+public class Client {
+
+	public static void main(String[] args) {
+		User user = createUser();
+		// Client has to provide director with concrete builder
+		UserDTO dto = directBuild((UserDTOBuilder) UserDTO.getBuilder(), user);
+		System.out.println(dto);
+	}
+
+	/**
+	 * This method serves the role of director in builder pattern.
+	 */
+	private static UserDTO directBuild(UserDTOBuilder builder, User user) {
+		return builder.withFirstName(user.getFirstName()).withLastName(user.getLastName())
+				.withBirthday(user.getBirthday()).withAddress(user.getAddress()).build();
+	}
+}
+````
