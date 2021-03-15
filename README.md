@@ -14,7 +14,10 @@ Summary:
     - [Dependency Inversion Principle](#dependency-inversion-principle)
 - [Design Patterns](#design-patterns)
     - [Creational Patterns](#creational-patterns)
-        - [Builder](#builder-pattern)      
+        - [Builder](#builder-pattern)
+            - [Implementations](#builder-implementations)     
+            - [Comparison with Prototype](#comparison-between-builder-and-prototype)
+            - [Pitfalls](#builder-pitfalls)      
      
 ## SOLID
 
@@ -761,7 +764,14 @@ What problem does the builder pattern solves?
 **When to use it?**
 * Complex processs to create an instance
 
- Implementations
+Diagram:
+
+Director (Client code): calls a builder instance
+Builder: Interface with build() and getTarget()
+ConcreteBuilder: Implements BuilderInterface
+Target: Class expected to be built
+
+#### Builder Implementations
  
  In java it can be done through a separate class or through an inner class
  that implements a Builder interface.
@@ -958,3 +968,26 @@ public class Client {
 	}
 }
 ````
+
+Design considerations
+
+Rarely the builder is implemented in a separate class.
+
+Abstract builder is not required if the target class is not part of 
+any inheritance hierarchy.
+
+Too many constructor arguments is a good indicator that the builder
+could solve the issue.
+
+##### Comparison between Builder and Prototype
+|Builder   | Prototype   | 
+|---|---|
+|Have complex constructor and builder allows us to work with that.   | prototype allows to altogether skip using constructor   |
+| We can create a builder as a separate class and so it can work with legacy code   |  In java this pattern works using clone method, and needs to modify existing code. Therefore, it doesn't work with legacy code.
+
+##### Builder Pitfalls
+* Method chaining can be difficult for new comers
+* Face a scenario where the program have a partially initialized object 
+
+
+
