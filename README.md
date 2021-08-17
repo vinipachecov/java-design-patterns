@@ -17,7 +17,14 @@ Summary:
         - [Builder](#builder-pattern)
             - [Implementations](#builder-implementations)     
             - [Comparison with Prototype](#comparison-between-builder-and-prototype)
-            - [Pitfalls](#builder-pitfalls)      
+            - [Pitfalls](#builder-pitfalls)
+        - [Simple Factory](#simple-factory-pattern)
+            - [Diagram](#simple-factory-diagram)
+            - [usecases](#simple-factory-use-case)
+            - [Comparison with factory method patttern](#comparison-between-simple-factory-and-factory-method-pattern)            
+            - [Consideration](#simple-factory-considerations)
+            - [Pitfalls](#simple-factory-pitfalls)
+            
      
 ## SOLID
 
@@ -1010,26 +1017,26 @@ Particularly, it is commonly set up in a static method as we don't require any c
 
 <strong>The reason to learn Simple Factory is to avoid confusion with the actual "factory method" pattern</strong>
 
-#### Use case
+#### Simple Factory Use case
 When there more than one option when instantiating and object and a simple logic is used to choose the correct class.
 
-#### Diagram
+#### Simple Factory Diagram
 
 ![alt text](./diagram-images/Simple_Factory.png "Title")
 
 
-#### Considerations
+#### Simple Factory Considerations
 Simple Factory can be used as a method inside a class. However, adding it in a sepearate
 class can help to use it across the project.
 
 The usage of the Builder pattern can help the actual instantiation of the objects.
 
-##### Comparison between Builder and Prototype
+##### Comparison between Simple Factory and Factory Method pattern
 |Simple Factory   | Factory Method   | 
 |---|---|
 |Simple the instantiation logic away from the client code. Usually placed in a static method.   | Useful when you want to delegate object creation to subclasses.|
 |Simple factory happens to know all classes of the objects it must create| Factory method don't know all subclasses of the <strong>product class</strong>|
 
-#### Pitfalls
+#### Simple Factory Pitfalls
 Over time, in the simple factory pattern, the logic used to decide which class to instantiate 
 can become complex and hard to grasp. In such scenario, it is wise to move to the factory method design pattern.
