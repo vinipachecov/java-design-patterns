@@ -990,4 +990,46 @@ could solve the issue.
 * Face a scenario where the program have a partially initialized object 
 
 
+### Simple Factory "Pattern"
+Some people don't consider Simple Factory to be a design pattern as it can be described as a method that encapsulate the logic
+to create an object.
 
+<strong>What problem does simple factory solves? </strong>
+
+When we have multiple types to be instantiated based on some criteria:
+
+```java
+if (key.equalsIgnoreCase("monster")) {
+    // create monster object
+} else if(key.equalsIgnoreCase("hero")) {
+    // create hero object    
+}
+```
+
+Particularly, it is commonly set up in a static method as we don't require any context.
+
+<strong>The reason to learn Simple Factory is to avoid confusion with the actual "factory method" pattern</strong>
+
+#### Use case
+When there more than one option when instantiating and object and a simple logic is used to choose the correct class.
+
+#### Diagram
+
+![alt text](./diagram-images/Simple_Factory.png "Title")
+
+
+#### Considerations
+Simple Factory can be used as a method inside a class. However, adding it in a sepearate
+class can help to use it across the project.
+
+The usage of the Builder pattern can help the actual instantiation of the objects.
+
+##### Comparison between Builder and Prototype
+|Simple Factory   | Factory Method   | 
+|---|---|
+|Simple the instantiation logic away from the client code. Usually placed in a static method.   | Useful when you want to delegate object creation to subclasses.|
+|Simple factory happens to know all classes of the objects it must create| Factory method don't know all subclasses of the <strong>product class</strong>|
+
+#### Pitfalls
+Over time, in the simple factory pattern, the logic used to decide which class to instantiate 
+can become complex and hard to grasp. In such scenario, it is wise to move to the factory method design pattern.

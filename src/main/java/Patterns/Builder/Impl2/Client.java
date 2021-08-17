@@ -1,6 +1,10 @@
 package Patterns.Builder.Impl2;
 
 
+import Patterns.Builder.Impl1.Address;
+import Patterns.Builder.Impl2.UserDTO;
+import Patterns.Builder.Impl1.User;
+
 import java.time.LocalDate;
 
 
@@ -9,14 +13,14 @@ public class Client {
 	public static void main(String[] args) {
 		User user = createUser();
 		// Client has to provide director with concrete builder
-		UserDTO dto = directBuild((UserDTOBuilder) UserDTO.getBuilder(), user);
+		UserDTO dto = directBuild((UserDTO.UserDTOBuilder) UserDTO.getBuilder(), user);
 		System.out.println(dto);
 	}
 
 	/**
 	 * This method serves the role of director in builder pattern.
 	 */
-	private static UserDTO directBuild(UserDTOBuilder builder, User user) {
+	private static UserDTO directBuild(UserDTO.UserDTOBuilder builder, User user) {
 		return builder.withFirstName(user.getFirstName()).withLastName(user.getLastName())
 				.withBirthday(user.getBirthday()).withAddress(user.getAddress()).build();
 	}
